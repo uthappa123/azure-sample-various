@@ -1,0 +1,84 @@
+{
+ "properties": {
+  "displayName": "Rally Deploy CanNotDelete Resource Lock",
+  "policyType": "Custom",
+  "mode": "All",
+  "description": "Rally - Deploy CanNotDelete Resource Lock",
+  "metadata": {
+   "version": "1.0.0",
+   "category": "Rally",
+   "createdBy": "36d325bc-42ae-494a-bc65-a155f3aab3e9",
+   "createdOn": "2022-08-17T23:01:03.8243758Z",
+   "updatedBy": "36d325bc-42ae-494a-bc65-a155f3aab3e9",
+   "updatedOn": "2022-08-18T01:16:14.7868519Z"
+  },
+  "parameters": {
+   "tagName": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Tag Name",
+     "description": "Name of the tag, such as 'environment'"
+    },
+    "defaultValue": "Production"
+   },
+   "tagValue": {
+    "type": "String",
+    "metadata": {
+     "displayName": "Tag Value",
+     "description": "Value of the tag, such as 'production'"
+    },
+    "defaultValue": "true"
+   }
+  },
+  "policyRule": {
+   "if": {
+    "allOf": [
+     {
+      "field": "type",
+      "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+     },
+     {
+      "field": "[concat('tags[', parameters('tagName'), ']')]",
+      "equals": "[parameters('tagValue')]"
+     }
+    ]
+   },
+   "then": {
+    "effect": "DeployIfNotExists",
+    "details": {
+     "type": "Microsoft.Authorization/locks",
+     "existenceCondition": {
+      "field": "Microsoft.Authorization/locks/level",
+      "equals": "CanNotDelete"
+     },
+     "roleDefinitionIds": [
+      "/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+     ],
+     "deployment": {
+      "properties": {
+       "mode": "incremental",
+       "template": {
+        "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+        "contentVersion": "1.0.0.0",
+        "resources": [
+         {
+          "type": "Microsoft.Authorization/locks",
+          "apiVersion": "2017-04-01",
+          "name": "DenyDelete",
+          "properties": {
+           "level": "CanNotDelete",
+           "notes": "Prevents deletion of resource group."
+          }
+         }
+        ]
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "id": "/subscriptions/98fdcd54-6bd4-42fe-9b0c-58adc03bfe3c/providers/Microsoft.Authorization/policyDefinitions/48fab193-c486-443e-a306-3a189c70281c",
+ "type": "Microsoft.Authorization/policyDefinitions",
+ "name": "48fab193-c486-443e-a306-3a189c70281c"
+}
