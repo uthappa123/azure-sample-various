@@ -1,2 +1,2 @@
 # azure-sample-various
-# sample scripts for Azure
+sample scripts for Azure
